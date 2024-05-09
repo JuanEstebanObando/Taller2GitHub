@@ -1,10 +1,10 @@
-package culturoteca.repository.impl;
+package cultureMedia.repository.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import culturoteca.model.View;
-import culturoteca.repository.ViewsRepository;
+import cultureMedia.model.View;
+import cultureMedia.repository.ViewsRepository;
 
 public class ViewsRepositoryImpl implements ViewsRepository {
 

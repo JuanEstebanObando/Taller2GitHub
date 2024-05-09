@@ -1,9 +1,9 @@
-package culturoteca.repository.impl;
+package cultureMedia.repository.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import culturoteca.model.Video;
-import culturoteca.repository.VideoRepository;
+import cultureMedia.model.Video;
+import cultureMedia.repository.VideoRepository;
 
 public class VideoRepositoryImpl implements VideoRepository {
 
@@ -25,27 +25,29 @@ public class VideoRepositoryImpl implements VideoRepository {
 	}
 
 	@Override
-	public List<Video> find(String title) {
-		List<Video> filteredVideos = null;
-		for ( Video video : videos ) {
-			if(title.equals( video.title() )){
-				if(filteredVideos == null){
-					filteredVideos = new ArrayList<Video>();
-				}
-				filteredVideos.add(video);
-			}
-		}
-		return filteredVideos;
-	}
+	
+    public List<Video> find(String title) {
+        List<Video> filteredVideos = new ArrayList<>();
+        for (Video video : videos) {
+            if (video.title().toLowerCase().contains(title.toLowerCase())) {
+                filteredVideos.add(video);
+            }
+        }
+        // Si no se encontró ningún video, devolver un array vacío
+        if (filteredVideos.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return filteredVideos;
+    }
 
 	@Override
 	public List<Video> find(Double fromDuration, Double toDuration) {
-		List<Video> filteredVideos = new ArrayList<Video>();
-		for ( Video video : videos ) {
-			if(video.duration()> fromDuration && video.duration()< toDuration){
-				filteredVideos.add(video);
-			}
-		}
-		return filteredVideos;
+	    List<Video> filteredVideos = new ArrayList<>();
+	    for (Video video : videos) {
+	        if (video.duration() >= fromDuration && video.duration() <= toDuration) {
+	            filteredVideos.add(video);
+	        }
+	    }
+	    return filteredVideos;
 	}
 }
