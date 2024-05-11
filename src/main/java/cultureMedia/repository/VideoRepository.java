@@ -2,11 +2,12 @@ package cultureMedia.repository;
 
 import java.util.List;
 
+import cultureMedia.exception.VideoNotFoundException;
 import cultureMedia.model.Video;
 
 public interface VideoRepository {
-	List<Video> findAll();
+	List<Video> findAll() throws VideoNotFoundException;
 	Video save(Video save);
 	List<Video> find(String title);
-	List<Video> find(Double fromDuration, Double toDuration);
+	List<Video> find(Double fromDuration, Double toDuration) throws VideoNotFoundException;
 }

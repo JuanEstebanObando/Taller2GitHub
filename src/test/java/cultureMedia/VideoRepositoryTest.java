@@ -4,20 +4,16 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import static org.junit.jupiter.api.Assertions.*;
+import cultureMedia.exception.VideoNotFoundException;
 import cultureMedia.model.Video;
 import cultureMedia.repository.VideoRepository;
 import cultureMedia.repository.impl.VideoRepositoryImpl;
-
-
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class VideoRepositoryTest {
 	private VideoRepository videoRepository;
-	
-	
-	
+
 	@BeforeEach
 	void init(){
 		videoRepository = new VideoRepositoryImpl();
@@ -38,7 +34,7 @@ class VideoRepositoryTest {
 	}
 
 	@Test
-	void when_FindAll_all_videos_should_be_returned_successfully() {
+	void when_FindAll_all_videos_should_be_returned_successfully() throws VideoNotFoundException {
 		List<Video> videos = videoRepository.findAll( );
 		assertEquals(6, videos.size());
 	}
@@ -50,7 +46,7 @@ class VideoRepositoryTest {
 	}
 
 	@Test
-	void when_FindByDuration_only_videos_between_the_range_should_be_returned_successfully() {
+	void when_FindByDuration_only_videos_between_the_range_should_be_returned_successfully() throws VideoNotFoundException {
 		List<Video> videos = videoRepository.find( 4.5, 5.5 );
 		assertEquals(3, videos.size());
 	}
@@ -62,9 +58,19 @@ class VideoRepositoryTest {
 	}
 
 	@Test
-	void when_FindByDuration_does_not_match_any_video_an_empty_list_should_be_returned_successfully() {
+	void when_FindByDuration_does_not_match_any_video_an_empty_list_should_be_returned_successfully() throws VideoNotFoundException {
         List<Video> videos = videoRepository.find(10.0, 20.0); // Por ejemplo, rango de duración que no coincide con ningún video
         assert(videos.isEmpty());
     }
+	
+	@Test
+	void when_FindAll_does_not_find_any_video_an_VideoNotFoundException_should_be_thrown_successfully() {
+		videoRepository = new VideoRepositoryImpl(); // Reiniciamos el repositorio pa que esté vacío
+        assertThrows(VideoNotFoundException.class, () -> {
+            videoRepository.findAll();
+        });
+	    
+    }
 
+	
 }
