@@ -2,6 +2,7 @@ package cultureMedia.service;
 
 import java.util.List;
 
+import cultureMedia.exception.VideoNotFoundException;
 import cultureMedia.model.Video;
 import cultureMedia.model.View;
 import cultureMedia.repository.VideoRepository;
@@ -18,8 +19,8 @@ public class CultureMediaServiceImpl implements CultureMediaService {
 		this.viewsRepository = viewsRepository;
 	}
 	@Override
-	public List<Video> findAll() {
-		return null;
+	public List<Video> findAll() throws VideoNotFoundException {
+		return videoRepository.findAll();
 	}
 
 	@Override

@@ -1,12 +1,9 @@
 package cultureMedia.exception;
 
 public class VideoNotFoundException extends Exception {
-	public VideoNotFoundException(String titulo) {
-		super();
+	public VideoNotFoundException(String message) {
+		super(message);
 		
 	}
-	public VideoNotFoundException() {
-		super();
-		
-	}
+	
 }
