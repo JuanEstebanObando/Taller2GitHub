@@ -71,6 +71,26 @@ class VideoRepositoryTest {
         });
 	    
     }
+	@Test
+    void when_FindByDuration_no_videos_in_duration_range_throw_VideoNotFoundException() {
+        assertThrows(VideoNotFoundException.class, () -> {
+            videoRepository.findByDuration(10.0, 20.0);
+        });
+    }
 
-	
+    @Test
+    void when_FindByDuration_videos_in_duration_range_returned_successfully() throws VideoNotFoundException {
+        List<Video> videos = videoRepository.findByDuration(4.0, 6.0);
+        assertEquals(5, videos.size());
+        assertEquals("01", videos.get(0).code());
+        assertEquals("02", videos.get(1).code());
+    }
+
+    @Test
+    void when_FindByTitle_videos_with_title_returned_successfully() throws VideoNotFoundException {
+        List<Video> videos = videoRepository.findByTitle("Título 1");
+        assertEquals(1, videos.size());
+        assertEquals("01", videos.get(0).code());
+        assertEquals("Título 1", videos.get(0).title());
+    }
 }
