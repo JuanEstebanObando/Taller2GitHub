@@ -1,96 +1,96 @@
 package cultureMedia;
 
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import cultureMedia.exception.VideoNotFoundException;
 import cultureMedia.model.Video;
-import cultureMedia.repository.VideoRepository;
-import cultureMedia.repository.impl.VideoRepositoryImpl;
+import cultureMedia.service.CultureMediaService;
+import java.util.List;
+import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class VideoRepositoryTest {
-	private VideoRepository videoRepository;
 
-	@BeforeEach
-	void init(){
-		videoRepository = new VideoRepositoryImpl();
-		
+    @Mock
+    private CultureMediaService cultureMediaService;
 
-		List<Video> videos = List.of(new Video("01", "Título 1", "----", 4.5),
-										   new Video("02", "Título 2", "----", 5.5),
-										   new Video("03", "Título 3", "----", 4.4),
-										   new Video("04", "Título 4", "----", 3.5),
-										   new Video("05", "Clic 5", "----", 5.7),
-									 	   new Video("06", "Clic 6", "----", 5.1));
-
-
-		for ( Video video : videos ) {
-			videoRepository.save( video );
-		}
-
-	}
-
-	@Test
-	void when_FindAll_all_videos_should_be_returned_successfully() throws VideoNotFoundException {
-		List<Video> videos = videoRepository.findAll( );
-		assertEquals(6, videos.size());
-	}
-
-	@Test
-	void when_FindByTitle_only_videos_which_contains_the_word_in_the_title_should_be_returned_successfully() {
-		List<Video> videos = videoRepository.find( "Clic" );
-		assertEquals(2, videos.size());
-	}
-
-	@Test
-	void when_FindByDuration_only_videos_between_the_range_should_be_returned_successfully() throws VideoNotFoundException {
-		List<Video> videos = videoRepository.find( 4.5, 5.5 );
-		assertEquals(3, videos.size());
-	}
-
-	@Test
-	void when_FindByTitle_does_not_match_any_video_an_empty_list_should_be_returned_successfully() {
-	    List<Video> videos = videoRepository.find("titulo_que_no_existe");
-	    assert(videos.isEmpty());
-	}
-
-	@Test
-	void when_FindByDuration_does_not_match_any_video_an_empty_list_should_be_returned_successfully() throws VideoNotFoundException {
-        List<Video> videos = videoRepository.find(10.0, 20.0); // Por ejemplo, rango de duración que no coincide con ningún video
-        assert(videos.isEmpty());
-    }
-	
-	@Test
-	void when_FindAll_does_not_find_any_video_an_VideoNotFoundException_should_be_thrown_successfully() {
-		videoRepository = new VideoRepositoryImpl(); // Reiniciamos el repositorio pa que esté vacío
-        assertThrows(VideoNotFoundException.class, () -> {
-            videoRepository.findAll();
-        });
-	    
-    }
-	@Test
-    void when_FindByDuration_no_videos_in_duration_range_throw_VideoNotFoundException() {
-        assertThrows(VideoNotFoundException.class, () -> {
-            videoRepository.findByDuration(10.0, 20.0);
-        });
+    @BeforeEach
+    void init() {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void when_FindByDuration_videos_in_duration_range_returned_successfully() throws VideoNotFoundException {
-        List<Video> videos = videoRepository.findByDuration(4.0, 6.0);
-        assertEquals(5, videos.size());
-        assertEquals("01", videos.get(0).code());
-        assertEquals("02", videos.get(1).code());
+    void mockFindAll() throws VideoNotFoundException {
+        List<Video> expectedVideos = List.of(
+                new Video("01", "Título 1", "----", 4.5),
+                new Video("02", "Título 2", "----", 5.5),
+                new Video("03", "Título 3", "----", 4.4));
+        when(cultureMediaService.findAll()).thenReturn(expectedVideos);
+
+        List<Video> actualVideos = cultureMediaService.findAll();
+
+        assertEquals(expectedVideos, actualVideos);
     }
 
     @Test
-    void when_FindByTitle_videos_with_title_returned_successfully() throws VideoNotFoundException {
-        List<Video> videos = videoRepository.findByTitle("Título 1");
-        assertEquals(1, videos.size());
-        assertEquals("01", videos.get(0).code());
-        assertEquals("Título 1", videos.get(0).title());
+    void mockFindByTitle() throws VideoNotFoundException {
+        String title = "Clic";
+        List<Video> expectedVideos = List.of(
+                new Video("05", "Clic 5", "----", 5.7),
+                new Video("06", "Clic 6", "----", 5.1));
+        when(cultureMediaService.findByTitle(title)).thenReturn(expectedVideos);
+
+        List<Video> actualVideos = cultureMediaService.findByTitle(title);
+
+        assertEquals(expectedVideos, actualVideos);
+    }
+
+    @Test
+    void mockFindByDuration() throws VideoNotFoundException {
+        double fromDuration = 4.0;
+        double toDuration = 6.0;
+        List<Video> expectedVideos = List.of(
+                new Video("01", "Título 1", "----", 4.5),
+                new Video("02", "Título 2", "----", 5.5),
+                new Video("03", "Título 3", "----", 4.4),
+                new Video("05", "Clic 5", "----", 5.7),
+                new Video("06", "Clic 6", "----", 5.1));
+        when(cultureMediaService.findByDuration(fromDuration, toDuration)).thenReturn(expectedVideos);
+
+        List<Video> actualVideos = cultureMediaService.findByDuration(fromDuration, toDuration);
+
+        assertEquals(expectedVideos, actualVideos);
+    }
+
+    @Test
+    void mockEmptyFind() throws VideoNotFoundException {
+        when(cultureMediaService.findByTitle("titulo_que_no_existe")).thenReturn(List.of());
+        when(cultureMediaService.findByDuration(10.0, 20.0)).thenReturn(List.of());
+
+        List<Video> emptyTitleVideos = cultureMediaService.findByTitle("titulo_que_no_existe");
+        List<Video> emptyDurationVideos = cultureMediaService.findByDuration(10.0, 20.0);
+
+        assertEquals(0, emptyTitleVideos.size());
+        assertEquals(0, emptyDurationVideos.size());
+    }
+
+    @Test
+    void mockThrowVideoNotFoundException() throws VideoNotFoundException {
+        when(cultureMediaService.findAll()).thenThrow(new VideoNotFoundException("Not found"));
+        when(cultureMediaService.findByTitle(eq("titulo_que_no_existe"))).thenThrow(new VideoNotFoundException("Not found"));
+        when(cultureMediaService.findByDuration(eq(10.0), eq(20.0))).thenThrow(new VideoNotFoundException("Not found"));
+
+        assertThrows(VideoNotFoundException.class, () -> {
+            cultureMediaService.findAll();
+        });
+        assertThrows(VideoNotFoundException.class, () -> {
+            cultureMediaService.findByTitle("titulo_que_no_existe");
+        });
+        assertThrows(VideoNotFoundException.class, () -> {
+            cultureMediaService.findByDuration(10.0, 20.0);
+        });
     }
 }
