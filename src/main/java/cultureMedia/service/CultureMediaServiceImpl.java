@@ -34,5 +34,11 @@ public class CultureMediaServiceImpl implements CultureMediaService {
 		View viewAdd = viewsRepository.save(save);
 		return viewAdd;
 	}
+	public List<Video> findByTitle(String title) throws VideoNotFoundException {
+		return videoRepository.findByTitle(title);
+	}
+	public List<Video> findByDuration(Double fromDuration, Double toDuration) throws VideoNotFoundException {
+		return videoRepository.findByDuration(fromDuration, toDuration);
+	}
 	
 }

@@ -59,4 +59,23 @@ public class VideoRepositoryImpl implements VideoRepository {
 	    }
 	    return filteredVideos;
 	}
+
+
+	@Override
+    public List<Video> findByTitle(String title) throws VideoNotFoundException {
+        List<Video> filteredVideos = find(title);
+        if (filteredVideos.isEmpty()) {
+            throw new VideoNotFoundException("No se encontraron videos con el título: " + title);
+        }
+        return filteredVideos;
+    }
+
+    @Override
+    public List<Video> findByDuration(Double fromDuration, Double toDuration) throws VideoNotFoundException {
+        List<Video> filteredVideos = find(fromDuration, toDuration);
+        if (filteredVideos.isEmpty()) {
+            throw new VideoNotFoundException("No se encontraron videos en el rango de duración especificado");
+        }
+        return filteredVideos;
+    }
 }
